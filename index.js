@@ -1,51 +1,13 @@
 const express = require("express");
-const multer = require("multer");
-const { PDFDocument } = require("pdf-lib");
-const cors = require("cors");
+const { Logger } = require("logger");
+const { Telegraf } = require("telegraf");
+const bot = new Telegraf("8114707533:AAHJeaeX9YyM9t3TgPGpT13oOr9d0mPbt2M")
+const log = new Logger()
+bot.start((ctx) => {
+    ctx.reply("salom")
+})
 
-const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
-
-const corsOptions = {
-    origin: ['http://localhost:3000', "https://prime-print.uz/"],
-    methods: ['GET', 'POST'],
-};
-
-app.use(cors(corsOptions));
-app.use(express.json());
-
-
-app.post("/api/page-count", upload.single("pdf"), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                error: "PDF fayl yuborilmadi",
-            });
-        }
-
-        if (req.file.mimetype !== "application/pdf") {
-            return res.status(400).json({
-                error: "Faqat PDF fayl qabul qilinadi",
-            });
-        }
-
-        const pdfBytes = req.file.buffer;
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-
-        const pageCount = pdfDoc.getPageCount();
-
-        return res.json({
-            page_count: pageCount,
-        });
-    } catch (err) {
-        return res.status(500).json({
-            error: "PDF o‘qishda xatolik",
-            message: err.message,
-        });
-    }
-});
-
-const PORT = 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 PDF Page Counter API ishlayapti: http://localhost:${PORT}`);
-});
+bot.launch(async () => {
+    await log.debug('this wont be logged');
+    console.log('salom');
+})
